@@ -6,16 +6,31 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.metricstream.constants.nodeType;
+
+/**
+ * 
+ *@author debdipta.h
+ *
+ *
+ *Generates the hash for each node type i.e. element nodes, text nodes and attribute nodes.
+ */
+
 import com.metricstream.domain.DTreeNode;
+
 
 public class hashGenerator {
 	
+/*
+ * Determines the type of node for which the hash has to be generated.
+ * If no predefined nodetype found outputs undetermined nodetype.	
+ */
 	public void generateHash(DTreeNode node){
-		if(node.getType()=="Element")
+		if(node.getType().equals(nodeType.Element.toString()))
 			node.setHash(elementHash(node));
-		else if(node.getType()=="Attribute")
+		else if(node.getType().equals(nodeType.Attribute.toString()))
 			node.setHash(attrHash(node));
-		else if(node.getType()=="Text")
+		else if(node.getType().equals(nodeType.Text.toString()))
 			node.setHash(textHash(node));
 		else{
 			System.err.println("Cannot determine the nodetype");
@@ -23,6 +38,9 @@ public class hashGenerator {
 	}
 }		
 	
+/*
+ * Generates hash for element nodes.	
+ */
    private Set<String> elementHash(DTreeNode node){
 	   byte[] digest=new byte[0];
 	   Set<String> finaldigest=new HashSet<String>();
@@ -51,6 +69,9 @@ public class hashGenerator {
 	  return finaldigest;
    }   
    
+ /*
+  * Generates hash for attribute nodes.  
+  */
    private Set<String> attrHash(DTreeNode node){
 	   byte[] digest=new byte[0];
 	   Set<String> finaldigest=new HashSet<String>();
@@ -78,6 +99,10 @@ public class hashGenerator {
 	   }
 	   return finaldigest;
    }
+   
+  /*
+   * Generates hash for text nodes. 
+   */
    
    private Set<String> textHash(DTreeNode node){
 	   byte[] digest=new byte[0];

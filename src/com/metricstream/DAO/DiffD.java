@@ -10,7 +10,11 @@ import com.metricstream.Util.xmlUtil;
 import com.metricstream.constants.nodeType;
 import com.metricstream.domain.DTree;
 import com.metricstream.domain.DTreeNode;
-
+/**
+ * 
+ * @author debdipta.h
+ *
+ */
 public class DiffD {
 	private void removeEqualSubTree(DTree basetree,DTree xprtdtree){
 		HashMap<HashSet<String>,DTreeNode> basemap=new HashMap<HashSet<String>,DTreeNode>();

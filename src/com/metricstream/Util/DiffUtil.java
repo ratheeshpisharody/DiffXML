@@ -16,6 +16,7 @@ import com.metricstream.domain.MatchPair;
  * 
  * @author debdipta.h
  *
+ *Diffing logic for the XMLs.
  */
 
 public class DiffUtil {
@@ -25,8 +26,12 @@ public class DiffUtil {
 		deleted=new ArrayList<DTreeNode>();
 	}
 	
+/*finding the minimum match and storing distance between nodes in distance table.
+ * Calculates distance between two nodes in a leaf to root manner.
+ * Uses min cost max flow algorithm to calculate the distances.
+ */
 	public DTreeNode findMinimumMatch(DTree baseTree,DTree xportedTree) throws distanceException{
-		ArrayList<MatchPair> minmatch=new ArrayList<MatchPair>();
+//		ArrayList<MatchPair> minmatch=new ArrayList<MatchPair>();
 		HashMap<MatchPair,Integer> distanceTable=new HashMap<MatchPair,Integer>();
 		Set<DTreeNode> baselements=new LinkedHashSet<DTreeNode>(baseTree.getRoot().getLeaves());
 		Set<DTreeNode> xprtelements=new LinkedHashSet<DTreeNode>(xportedTree.getRoot().getLeaves());
@@ -60,16 +65,12 @@ public class DiffUtil {
 						
 		}while(!baselements.isEmpty()&& !xprtelements.isEmpty());
 		
-		if(baseTree.getRoot().getSignature().equals(xportedTree.getRoot().getSignature())){
-			minmatch.add(new MatchPair(baseroot,xprtroot));	
-		}
-		for(MatchPair mpair:distanceTable.keySet()){
-			if(mpair.getfirstnode().getType().equals(nodeType.Element)&& mpair.getsecondnode().getType().equals(nodeType.Element))
-				minmatch.add(mpair);
-		}
+/*		for(MatchPair mpair:distanceTable.keySet())
+			System.out.println(mpair.getfirstnode().getNodeName()+mpair.getfirstnode().getNodeValue()+"/"+mpair.getsecondnode().getNodeName()+mpair.getsecondnode().getNodeValue()+"/"+distanceTable.get(mpair));*/
 		return editScript(baseroot,xprtroot,distanceTable);
 	}
 
+//Distance function for calculating distance between two nodes.	
    private int Dist(DTreeNode firstnode,DTreeNode secondnode,HashMap<MatchPair,Integer> distanceTable) throws distanceException{
 	   int dist=-1;
 	   if(!firstnode.getType().equals(nodeType.Element.toString())&& !secondnode.getType().equals(nodeType.Element.toString())){
@@ -110,7 +111,10 @@ private int max(int x,int y){
     return y;
 }
 
-
+/*This function does the necessary changes to the base DTree to get the updated one. 
+*If the new root is a totally new one the base root is replaced with the new one.
+*returns the root node of the diffed DTree.
+*/
  private DTreeNode editScript(DTreeNode baseroot,DTreeNode xprtroot,HashMap<MatchPair,Integer> distanceTable){
 	 MatchPair pair=new MatchPair(baseroot,xprtroot);
 	 HashSet<DTreeNode> basexcselements=new HashSet<DTreeNode>();
@@ -129,6 +133,7 @@ private int max(int x,int y){
 		   for(DTreeNode nodebase:baseroot.getChildren()){ 
 			   flagx=0;
 			   for(DTreeNode nodexprt:xprtroot.getChildren()){
+				if(nodexprt.status()!='Y'){
 			     MatchPair piar=new MatchPair(nodebase,nodexprt);
 			     if(distanceTable.containsKey(piar)){
 			    	 flagx=1;
@@ -138,13 +143,17 @@ private int max(int x,int y){
 					else if(nodebase.getType().equals(nodeType.Attribute.toString())){
 						basexcselements.add(nodebase);
 					}
+					else
+						deleted.add(piar.getfirstnode());
 						
 				   }
 				  else
 					  editScript(piar.getfirstnode(),piar.getsecondnode(),distanceTable);
-			     }  
-				  
-			  }
+				  nodexprt.updateStatus('Y'); 
+				  break;
+			     }     
+			   }
+			  }	
 			  if(flagx==0)
 			   basexcselements.add(nodebase);
 			  nodebase.removeChildren(deleted);
@@ -155,7 +164,7 @@ private int max(int x,int y){
 			   
 		   xprtexcselements=new HashSet<DTreeNode>(getxprtnodes(distanceTable.keySet()));
 		   for(DTreeNode nodexprt:xprtroot.getChildren()){
-			   if(!xprtexcselements.contains(nodexprt))
+			   if(!xprtexcselements.contains(nodexprt)&& nodexprt.status()=='N')
 				   nodexprt.insert(baseroot);
 		   }
 		   
@@ -164,19 +173,33 @@ private int max(int x,int y){
  return resultant;
  }
  
- 
+ /*
+  * get the second nodes from the MatchPairs of the distanceTable.
+  */
  private Set<DTreeNode> getxprtnodes(Set<MatchPair> nodes){
 	 Set<DTreeNode> secondnodes=new HashSet<DTreeNode>(); 
 	 for(MatchPair mpair:nodes)
 		 secondnodes.add(mpair.getsecondnode());
+//		 System.out.println("__"+mpair.getsecondnode().getNodeName()+"/");}
 	 return secondnodes;
  }
+ 
+ /*
+  * get the first nodes of the MatchPairs of the distanceTable.
+  */
+ 
  private Set<DTreeNode> getbasenodes(Set<MatchPair> nodes){
 	 Set<DTreeNode> fnodes=new HashSet<DTreeNode>(); 
 	 for(MatchPair mpair:nodes)
 		 fnodes.add(mpair.getfirstnode());
 	 return fnodes;
  }
+ 
+/*
+ * Adjusts the attributes of a node.
+ * Returns true if there is no change between the attributes of a tag i.e. there is no updation or insertion of new attributes.
+ * Returns false otherwise and also does the required changes to the DTree Structure. 
+ */
 private boolean adjustedAttributes(DTreeNode baseroot,DTreeNode xprtnode,HashMap<MatchPair,Integer> distanceTable){
 	Set<DTreeNode> secondnodes=new HashSet<DTreeNode>(getxprtnodes(distanceTable.keySet())); 
 	Set<DTreeNode> fnodes=new HashSet<DTreeNode>(getbasenodes(distanceTable.keySet()));

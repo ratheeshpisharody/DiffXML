@@ -1,6 +1,6 @@
 package com.metricstream.domain;
 /**
- *@author debdipta.h
+ *@author debdipta.h 
  * 
  * Definition of node for DTree.
  */
@@ -19,11 +19,13 @@ public class DTreeNode {
     private int attributesize;
     private HashSet<String> hashvalue;
     private  ArrayList<DTreeNode> leaves;
+    private char status;
     
     DTreeNode(){
     	children=new ArrayList<DTreeNode>();
         hashvalue=new HashSet<String>();
         attributesize=0;
+        this.status='N';
     }
     
     DTreeNode(String nodename,String value,String type){
@@ -35,6 +37,7 @@ public class DTreeNode {
     	hashvalue=new HashSet<String>();
     	attributesize=0;
     	leaves=new ArrayList<DTreeNode>();
+    	this.status='N';
     }
     
     DTreeNode(String nodename,String value,String type,DTreeNode parent){
@@ -47,6 +50,7 @@ public class DTreeNode {
     	hashvalue=new HashSet<String>();
     	attributesize=0;
     	leaves=new ArrayList<DTreeNode>();
+    	this.status='N';
     }
     
     
@@ -133,4 +137,12 @@ public class DTreeNode {
     public void removeChildren(ArrayList<DTreeNode> list){
     	this.children.removeAll(list);
     }
+    
+    public void updateStatus(char status){ 
+    	this.status=status;
+    }
+     public char status(){
+    	 return status;
+     }
+    
 }

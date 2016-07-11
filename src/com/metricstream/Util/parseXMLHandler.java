@@ -1,7 +1,8 @@
 package com.metricstream.Util;
 /**
- * @author debdipta.h
+ * @author debdipta.h 
  * 
+ * Parses an XML using SAX parser and creates a DTree out of it.
  */
 
 import java.util.Stack; 
@@ -44,7 +45,7 @@ public class parseXMLHandler extends DefaultHandler {
 		elements.push(newnode);
 		newnode.updateAttributeSize(attributes.getLength());
 		for(int i=0;i<attributes.getLength();i++){
-			System.out.println(attributes.getQName(i));
+//			System.out.println(attributes.getQName(i));
 			DTreeNode attrnode=xmltree.createNode(attributes.getQName(i), attributes.getValue(i),nodeType.Attribute.toString(),newnode);
 			hashgen.generateHash(attrnode);
 			newnode.addChildren(attrnode);

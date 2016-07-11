@@ -15,6 +15,12 @@ import com.metricstream.Exceptions.distanceException;
 import com.metricstream.Util.parseXMLHandler;
 import com.metricstream.domain.DTree;
 
+/**
+ * 
+ * @author debdipta.h
+ *
+ *Testing code with the main class
+ */
 public class xmltest {
 	public static void main(String args[]) throws ParserConfigurationException, SAXException, IOException, distanceException {
 		try{

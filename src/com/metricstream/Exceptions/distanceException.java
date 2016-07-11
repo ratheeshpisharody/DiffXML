@@ -1,5 +1,9 @@
 package com.metricstream.Exceptions;
-
+/**
+ * 
+ * @author debdipta.h
+ *
+ */
 @SuppressWarnings("serial")
 public class distanceException extends Exception{
 	
