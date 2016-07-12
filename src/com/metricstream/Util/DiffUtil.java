@@ -65,14 +65,14 @@ public class DiffUtil {
 						
 		}while(!baselements.isEmpty()&& !xprtelements.isEmpty());
 		
-/*		for(MatchPair mpair:distanceTable.keySet())
-			System.out.println(mpair.getfirstnode().getNodeName()+mpair.getfirstnode().getNodeValue()+"/"+mpair.getsecondnode().getNodeName()+mpair.getsecondnode().getNodeValue()+"/"+distanceTable.get(mpair));*/
+		for(MatchPair mpair:distanceTable.keySet())
+			System.out.println(mpair.getfirstnode().getNodeName()+mpair.getfirstnode().getNodeValue()+"/"+mpair.getsecondnode().getNodeName()+mpair.getsecondnode().getNodeValue()+"/"+distanceTable.get(mpair));
 		return editScript(baseroot,xprtroot,distanceTable);
 	}
 
 //Distance function for calculating distance between two nodes.	
    private int Dist(DTreeNode firstnode,DTreeNode secondnode,HashMap<MatchPair,Integer> distanceTable) throws distanceException{
-	   int dist=-1;
+	   int dist=-1; int flagx,flagy;
 	   if(!firstnode.getType().equals(nodeType.Element.toString())&& !secondnode.getType().equals(nodeType.Element.toString())){
 		   if(firstnode.getSignature().equals(secondnode.getSignature())){
 			   if(firstnode.getNodeValue().equals(secondnode.getNodeValue())){
@@ -85,8 +85,12 @@ public class DiffUtil {
 	   
 	   else{
 		  for(DTreeNode fnode:firstnode.getChildren()){
+			  flagx=0;
 			  for(DTreeNode snode:secondnode.getChildren()){
+				  flagy=0;
 				 if(fnode.getSignature().equals(snode.getSignature())){
+					 flagx=1;
+					 flagy=1;
 					 MatchPair nodepair=new MatchPair(fnode,snode);
 //					 System.out.println(distanceTable.containsKey(nodepair)+fnode.getNodeName()+snode.getNodeName());
 					 if(!distanceTable.containsKey(nodepair)){
@@ -99,7 +103,12 @@ public class DiffUtil {
 						 dist=max(dist,distanceTable.get(nodepair)); 
 					  
 				 }
+				if(flagy==0)
+					dist=max(dist,1);
+					
 			  }
+			  if(flagx==0)
+				  dist=max(dist,1);
 		  }
 	   }
 	  return dist;
@@ -164,7 +173,7 @@ private int max(int x,int y){
 			   
 		   xprtexcselements=new HashSet<DTreeNode>(getxprtnodes(distanceTable.keySet()));
 		   for(DTreeNode nodexprt:xprtroot.getChildren()){
-			   if(!xprtexcselements.contains(nodexprt)&& nodexprt.status()=='N')
+			   if(!xprtexcselements.contains(nodexprt)&& nodexprt.status()!='Y')
 				   nodexprt.insert(baseroot);
 		   }
 		   
